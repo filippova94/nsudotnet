@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace NumberGuesser
+namespace Filippova.Nsudotnet.NumberGuesser
 {
     class Guesser
     {
