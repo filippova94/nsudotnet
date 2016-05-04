@@ -39,12 +39,13 @@ namespace Filippova.Nsudotnet.NumberGuesser
                 {
                     if (attempt == number)
                     {
+                        TimeSpan time = DateTime.Now - startDate;
                         Console.WriteLine("Вы отгадали, {0}! Количество попыток: {1} ", userName, count);
                         for (var i = 0; i < count; i++)
                         {
                             Console.WriteLine(string.Concat(allAnswers[i], " ", (allAnswers[i] > number) ? ">" : "<"));
                         }
-                        Console.WriteLine("На отгадывание ушло {0} минут", (DateTime.Now.Subtract(startDate).Seconds/60.0));
+                        Console.WriteLine("На отгадывание ушло {0} минут", time.TotalMinutes);
                         isGuessed = true;
                         Console.ReadLine();
                     }
