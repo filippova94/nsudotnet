@@ -7,28 +7,32 @@ namespace Filippova.Nsudotnet.LinesCounter
 {
     class LinesCounter
     {
+        private const string ExtensionNotFound= "Необходимо ввести тип учитываемых файлов. Пример: .txt",
+            Total = "Суммарное количество осмысленных строк во всех учтенных файлах формата {0} в текущей директории и во всех вложенных директориях : {1}";
+        private static string extension;
+        private static long lines;
         static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Необходимо ввести тип учитываемых файлов. Пример: *.txt");
+                Console.WriteLine(ExtensionNotFound);
                 Console.ReadLine();
                 return;
             }
-            var extension = args[0];
-            var lines = LinesInDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()), extension);
-            Console.WriteLine(string.Concat("Суммарное количество осмысленных строк во всех учтенных файлах формата ", extension, " в текущей директории и во всех вложенных директориях : ", lines));
+            extension = args[0];
+            lines = LinesInDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
+            Console.WriteLine(Total, extension, lines);
             Console.ReadLine();
         }
 
-        static long LinesInDirectory(DirectoryInfo dir, string extension)
+        static long LinesInDirectory(DirectoryInfo dir)
         {
             long lines = 0;
             try
             {
                 var dirs = dir.GetDirectories();
-                lines += dirs.Sum(directory => LinesInDirectory(directory, extension));
-                var files = dir.GetFiles(string.Concat(extension));
+                lines += dirs.Sum(directory => LinesInDirectory(directory));
+                var files = dir.GetFiles(string.Concat("*", extension));
                 lines += files.Sum(file => LinesInFile(file));
             }
             catch (Exception e)

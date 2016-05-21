@@ -25,7 +25,7 @@ namespace Filippova.Nsudotnet.Enigma
                     algorithm = new RijndaelManaged();
                     break;
                 default:
-                    throw new Exception("Неизвестный алгоритм шифрования. Должен быть указан один из вариантов - aes, des, rc2, rijndael");
+                    throw new Exception(MainClass.Unknown);
             }
 
             byte[] key, IV;
