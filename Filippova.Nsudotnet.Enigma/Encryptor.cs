@@ -27,15 +27,15 @@ namespace Filippova.Nsudotnet.Enigma
                     algorithm = new RijndaelManaged();
                     break;
                 default:
-                    throw new Exception("Неизвестный алгоритм шифрования");
+                    throw new Exception("Неизвестный алгоритм шифрования. Должен быть указан один из вариантов - aes, des, rc2, rijndael");
             }
             algorithm.GenerateIV();
             algorithm.GenerateKey();
 
-            var IV = Convert.ToBase64String(algorithm.IV);
-            var key = Convert.ToBase64String(algorithm.Key);
             var keyFile = string.Concat(inputFile.Contains('.') ? inputFile.Substring(0,
-                inputFile.LastIndexOf('.')) : inputFile, FileEnd);
+               inputFile.LastIndexOf('.')) : inputFile, FileEnd);
+            var key = Convert.ToBase64String(algorithm.Key);
+            var IV = Convert.ToBase64String(algorithm.IV);
 
             using (var outFile = new FileStream(keyFile, FileMode.Create))
             {
@@ -45,15 +45,12 @@ namespace Filippova.Nsudotnet.Enigma
                     writer.WriteLine(IV);
                 }
             }
-            using (var inFile = new FileStream(inputFile, FileMode.Open))
+            using (FileStream inFile = new FileStream(inputFile, FileMode.Open),  outFile = new FileStream(outputFile, FileMode.Create))
             {
-                using (var outFile = new FileStream(outputFile, FileMode.Create))
-                {
-                    using (var crypto = new CryptoStream(outFile, algorithm.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        inFile.CopyTo(crypto);
-                    }
-                }
+               using (var crypto = new CryptoStream(outFile, algorithm.CreateEncryptor(), CryptoStreamMode.Write))
+               {
+                   inFile.CopyTo(crypto);
+               }
             }
         }
     }

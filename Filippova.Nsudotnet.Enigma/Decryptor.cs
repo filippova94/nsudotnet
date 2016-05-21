@@ -25,8 +25,9 @@ namespace Filippova.Nsudotnet.Enigma
                     algorithm = new RijndaelManaged();
                     break;
                 default:
-                    throw new Exception("Неизвестный алгоритм шифрования");
+                    throw new Exception("Неизвестный алгоритм шифрования. Должен быть указан один из вариантов - aes, des, rc2, rijndael");
             }
+
             byte[] key, IV;
 
             using (var inFile = new FileStream(keyFile, FileMode.Open))
@@ -37,16 +38,12 @@ namespace Filippova.Nsudotnet.Enigma
                     IV = Convert.FromBase64String(writer.ReadLine());
                 }
             }
-            using (var inFile = new FileStream(inputFile, FileMode.Open))
+            using (FileStream inFile = new FileStream(inputFile, FileMode.Open), outFile = new FileStream(outputFile, FileMode.Create))
             {
-                using (var outFile = new FileStream(outputFile, FileMode.Create))
-                {
-                    using (var crypto = new CryptoStream(inFile, algorithm.CreateDecryptor(key, IV),
-                        CryptoStreamMode.Read))
+                    using (var crypto = new CryptoStream(inFile, algorithm.CreateDecryptor(key, IV), CryptoStreamMode.Read))
                     {
                         crypto.CopyTo(outFile);
                     }
-                }
             }
         }
     }
