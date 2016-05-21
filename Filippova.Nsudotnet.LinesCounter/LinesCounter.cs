@@ -7,67 +7,64 @@ namespace Filippova.Nsudotnet.LinesCounter
 {
     class LinesCounter
     {
-        private static string _extension;
-
         static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Программа принимает параметром командной строки тип учитываемых файлов. Пример: .txt");
+                Console.WriteLine("Необходимо ввести тип учитываемых файлов. Пример: *.txt");
                 Console.ReadLine();
                 return;
             }
-            _extension = args[0];
-            var linesCount = LinesCountInDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
-            Console.WriteLine(string.Concat("Суммарное количество осмысленных строк во всех учтенных файлах формата ", _extension, " в текущей директории и во всех вложенных директориях : ", linesCount));
+            var extension = args[0];
+            var lines = LinesInDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()), extension);
+            Console.WriteLine(string.Concat("Суммарное количество осмысленных строк во всех учтенных файлах формата ", extension, " в текущей директории и во всех вложенных директориях : ", lines));
             Console.ReadLine();
         }
 
-        static long LinesCountInDirectory(DirectoryInfo dir)
+        static long LinesInDirectory(DirectoryInfo dir, string extension)
         {
-            long linesCount = 0;
+            long lines = 0;
             try
             {
-                var directories = dir.GetDirectories();
-                linesCount += directories.Sum(directory => LinesCountInDirectory(directory));
-                var files = dir.GetFiles(string.Concat("*", _extension));
-                linesCount += files.Sum(file => LinesCountInFile(file));
+                var dirs = dir.GetDirectories();
+                lines += dirs.Sum(directory => LinesInDirectory(directory, extension));
+                var files = dir.GetFiles(string.Concat(extension));
+                lines += files.Sum(file => LinesInFile(file));
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                Console.ReadLine();
             }
-            return linesCount;
+            return lines;
         }
 
-        static long LinesCountInFile(FileInfo file)
+        static long LinesInFile(FileInfo file)
         {
-            var regex = new Regex("\\/\\*[^\\/]*[^\\*]*\\*\\/|\\/\\/[^\n]*");
-            long linesCount = 0;
+            var regex = @"(@(?:""[^""]*"")+|""(?:[^""\n\\]+|\\.)*""|'(?:[^'\n\\]+|\\.)*')|//.*|/\*(?s:.*?)\*/";
+            long lines = 0;
             using (TextReader reader = new StreamReader(file.OpenRead()))
             {
-                string currentString;
                 bool isComment = false;
-                while ((currentString = reader.ReadLine()) != null)
+                string curString;
+                while ((curString = reader.ReadLine()) != null)
                 {
-                    if (string.IsNullOrWhiteSpace(currentString))
-                        continue;
                     if (isComment)
-                        currentString = string.Concat("/*", currentString);
-                    currentString = regex.Replace(currentString, "");
-                    if (currentString.Contains("/*"))
+                        curString = string.Concat("/*", curString);
+                    curString = Regex.Replace(curString, regex, String.Empty);
+                    if (curString.Contains("/*"))
                     {
                         isComment = true;
-                        currentString = string.Concat(currentString, "*/");
-                        currentString = regex.Replace(currentString, "");
+                        curString = string.Concat(curString, "*/");
+                        curString = Regex.Replace(curString, regex, String.Empty);
                     }
                     else
                         isComment = false;
-                    if (!string.IsNullOrWhiteSpace(currentString))
-                        linesCount++;
+                    if (!string.IsNullOrWhiteSpace(curString))
+                        lines++;
                 }
             }
-            return linesCount;
+            return lines;
         }
     }
 }
