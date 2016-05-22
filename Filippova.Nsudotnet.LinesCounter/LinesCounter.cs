@@ -7,21 +7,19 @@ namespace Filippova.Nsudotnet.LinesCounter
 {
     class LinesCounter
     {
-        private const string ExtensionNotFound= "Необходимо ввести тип учитываемых файлов. Пример: .txt",
-            Total = "Суммарное количество осмысленных строк во всех учтенных файлах формата {0} в текущей директории и во всех вложенных директориях : {1}";
         private static string extension;
         private static long lines;
         static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                Console.WriteLine(ExtensionNotFound);
+                Console.WriteLine(Properties.Resources.ExtensionNotFound);
                 Console.ReadLine();
                 return;
             }
             extension = args[0];
             lines = LinesInDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()));
-            Console.WriteLine(Total, extension, lines);
+            Console.WriteLine(Properties.Resources.Total, extension, lines);
             Console.ReadLine();
         }
 

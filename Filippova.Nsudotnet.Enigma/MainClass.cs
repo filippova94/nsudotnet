@@ -5,18 +5,12 @@ namespace Filippova.Nsudotnet.Enigma
 
     class MainClass
     {
-        public const string Unknown = "Неизвестный алгоритм шифрования. Должен быть указан один из вариантов - aes, des, rc2, rijndael";
-        private const string Encrypt = "encrypt", Decrypt = "decrypt", 
-            FirstArg = "Первым аргументом должна быть строка: для шифрования {0} или для расшифровки {1}",
-            NullArg = "Аргументы программы не введены!";
-        private const string AllArgsForEncryption = "Не введены все необходимые 4 аргумента, т.е. имя входного файла, название типа шифрования и имя выходного файла",
-            AllArgsForDecryption = "Не введены все необходимые 5 аргументов, т.е. имя входного файла, название типа шифрования, имя файла-ключа и имя выходного файла";
-       
+        private const string Encrypt = "encrypt", Decrypt = "decrypt";
         static void Main(string[] args)
         {
             if (args.Length < 1)
             {
-                Console.WriteLine(NullArg);
+                Console.WriteLine(Properties.Resources.NullArg);
                 Console.ReadLine();
                 return;
             }
@@ -27,7 +21,7 @@ namespace Filippova.Nsudotnet.Enigma
                     case Encrypt:
                         if (args.Length < 4)
                         {
-                            Console.WriteLine(AllArgsForEncryption);
+                            Console.WriteLine(Properties.Resources.AllArgsForEncryption);
                             Console.ReadLine();
                             return;
                         }
@@ -37,7 +31,7 @@ namespace Filippova.Nsudotnet.Enigma
                     case Decrypt:
                         if (args.Length < 5)
                         {
-                            Console.WriteLine(AllArgsForDecryption);
+                            Console.WriteLine(Properties.Resources.AllArgsForDecryption);
                             Console.ReadLine();
                             return;
                         }
@@ -45,7 +39,7 @@ namespace Filippova.Nsudotnet.Enigma
                         decryptor.Decryption(args[1], args[2], args[3], args[4]);
                         break;
                     default:
-                        Console.WriteLine(FirstArg, Encrypt, Decrypt);
+                        Console.WriteLine(Properties.Resources.FirstArg, Encrypt, Decrypt);
                         Console.ReadLine();
                         break;
                 }

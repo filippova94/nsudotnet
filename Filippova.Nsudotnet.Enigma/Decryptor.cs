@@ -25,7 +25,7 @@ namespace Filippova.Nsudotnet.Enigma
                     algorithm = new RijndaelManaged();
                     break;
                 default:
-                    throw new Exception(MainClass.Unknown);
+                    throw new Exception(Properties.Resources.Unknown);
             }
 
             byte[] key, IV;
