@@ -36,32 +36,51 @@ namespace Filippova.Nsudotnet.LinesCounter
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                Console.ReadLine();
             }
             return lines;
         }
 
         static long LinesInFile(FileInfo file)
         {
-            var regex = @"(@(?:""[^""]*"")+|""(?:[^""\n\\]+|\\.)*""|'(?:[^'\n\\]+|\\.)*')|//.*|/\*(?s:.*?)\*/";
             long lines = 0;
             using (TextReader reader = new StreamReader(file.OpenRead()))
             {
                 bool isComment = false;
+                int commentStart = 0;
                 string curString;
                 while ((curString = reader.ReadLine()) != null)
                 {
-                    if (isComment)
-                        curString = string.Concat("/*", curString);
-                    curString = Regex.Replace(curString, regex, String.Empty);
-                    if (curString.Contains("/*"))
+                    for (int i = 0; i < curString.Length - 1; i++)
                     {
-                        isComment = true;
-                        curString = string.Concat(curString, "*/");
-                        curString = Regex.Replace(curString, regex, String.Empty);
+                        if (curString[i].Equals('/'))
+                        {
+                            if (curString[i + 1].Equals('*')){
+                                isComment = true;
+                                commentStart = i;
+                            }
+                            else
+                                if (curString[i + 1].Equals('/'))
+                                {
+                                    curString = curString.Remove(i, curString.Length - i);
+                                    break;
+                                }
+                        }
+                        if (isComment)
+                        {
+                            if (!curString.Contains("*/"))
+                            {
+                                curString = curString.Remove(i, curString.Length - i);
+                                commentStart = 0;
+                                break;
+                            }
+                            if(curString[i].Equals('*') && curString[i+1].Equals('/'))
+                            {
+                                curString = curString.Remove(commentStart, i+2 - commentStart);
+                                isComment = false;
+                                break;
+                            }
+                        }
                     }
-                    else
-                        isComment = false;
                     if (!string.IsNullOrWhiteSpace(curString))
                         lines++;
                 }
